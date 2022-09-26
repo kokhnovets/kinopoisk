@@ -1,31 +1,59 @@
 document.addEventListener("DOMContentLoaded", function () {
   var myModal = new bootstrap.Modal(document.getElementById("exampleModal"));
-  const addMoviesForm = document.querySelector(".needs-validation"),
+  const addMoviesForm = document.querySelector(".add-movie"),
     addMoviesPosters = addMoviesForm.querySelector(".form-image"),
     addMoviesName = addMoviesForm.querySelector(".form-name"),
     addMoviesDate = addMoviesForm.querySelector(".form-date"),
     movieList = document.querySelector(".column-movies");
-  // Добавление Aнового фильма
+  let movieNameCheck;
+  // Добавление нового фильма/редактирование
   addMoviesForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const linkMoviePosters = addMoviesPosters.value,
-      movieName = addMoviesName.value,
-      moviesDate = addMoviesDate.value,
-      movies = {};
-    if (!checkFormsMovieAdd(linkMoviePosters, movieName, moviesDate)) return;
-    movies.moviePosters = linkMoviePosters;
-    movies.movieName = movieName;
-    movies.moviesDate = moviesDate;
-    movies.inFavourite = false;
-    loadMovieInJSON(movieName, movies);
+    if (addMoviesForm.getAttribute("id") === "changeMovie") {
+      let movie = JSON.parse(localStorage[movieNameCheck]);
+      if (movie.movieName != addMoviesName.value) {
+        localStorage.removeItem(movie.movieName);
+        if (
+          !checkFormsMovieChange(
+            addMoviesPosters.value,
+            addMoviesName.value,
+            addMoviesDate.value
+          )
+        )
+          return;
+        movie.moviePosters = addMoviesPosters.value;
+        movie.movieName = addMoviesName.value;
+        movie.moviesDate = addMoviesDate.value;
+        loadMovieInJSON(addMoviesName.value, movie);
+      } else {
+        movie.moviePosters = addMoviesPosters.value;
+        movie.moviesDate = addMoviesDate.value;
+        loadMovieInJSON(addMoviesName.value, movie);
+      }
+    } else if (addMoviesForm.getAttribute("id") === "addMovie") {
+      const movies = {};
+      if (
+        !checkFormsMovieAdd(
+          addMoviesPosters.value,
+          addMoviesName.value,
+          addMoviesDate.value
+        )
+      )
+        return;
+      movies.moviePosters = addMoviesPosters.value;
+      movies.movieName = addMoviesName.value;
+      movies.moviesDate = addMoviesDate.value;
+      movies.inFavourite = false;
+      loadMovieInJSON(addMoviesName.value, movies);
+    }
     loadMovieList();
-    event.target.reset();
     myModal.hide();
+    event.target.reset();
   });
   // Проверка заполнения формы при добавлении/редактировании
   function checkFormsMovieAdd(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
-      if (!localStorage.getItem(movieName)) {
+      if (movieName && !localStorage.getItem(movieName)) {
         if (movieName.length > 2) {
           if (moviesDate) {
             return true;
@@ -51,17 +79,16 @@ document.addEventListener("DOMContentLoaded", function () {
       elem.append(messages);
     }
   }
-  // function checkFormsMovieChange(linkMoviePosters, movieName, moviesDate) {
-  //   if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
-  //     if (!localStorage.getItem(movieName)) {
-  //       if (movieName.length > 2) {
-  //         if (moviesDate) {
-  //           return true;
-  //         } else alert("Введите корерктную дату!");
-  //       } else alert("Введите корректное название!");
-  //     } else alert("Такой фильм уже существует! Выберите другое название.");
-  //   } else alert("Ссылка невалидна!");
-  // }
+  // проверку на редактирование вынес в отдельную функцию, т.к. в функции добавления идет еще проверка существующих фильмов
+  function checkFormsMovieChange(linkMoviePosters, movieName, moviesDate) {
+    if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
+      if (movieName.length > 2) {
+        if (moviesDate) {
+          return true;
+        } else alert("Введите корерктную дату!");
+      } else alert("Введите корректное название!");
+    } else alert("Ссылка невалидна!");
+  }
   // Перевод объекта в формат JSON
   function loadMovieInJSON(key, movies) {
     localStorage.setItem(key, JSON.stringify(movies));
@@ -127,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
     loadMovieList();
     checkMovies(movieList);
   });
-  // Изменение данных фильма через делегирование событий
+  // Редактирование фильма
   document.addEventListener("click", (event) => {
     if (!event.target.classList.contains("change-movie")) return;
     let parent = event.target.closest(".movies");
@@ -136,34 +163,23 @@ document.addEventListener("DOMContentLoaded", function () {
     let movie = JSON.parse(
       localStorage[parent.querySelector(".movie-name").textContent]
     );
-    const movieNameCheck = movie.movieName;
     addMoviesPosters.value = movie.moviePosters;
     addMoviesName.value = movie.movieName;
     addMoviesDate.value = movie.moviesDate;
-
-    addMoviesName.addEventListener("change", function () {
-      if (movieNameCheck != addMoviesName.value) {
-        localStorage.removeItem(movieNameCheck);
-      }
-    });
-    checkFormsMovie(
-      addMoviesPosters.value,
-      addMoviesName.value,
-      addMoviesDate.value,
-      movie.inFavourite,
-      movie
-    );
-    loadMovieList(addMoviesName.value);
-    myModal.hide();
+    movieNameCheck = movie.movieName;
+    // При нажатии кнопки редактирования присваивается id = changeMovie
+    addMoviesForm.setAttribute("id", "changeMovie");
+    loadMovieList();
   });
   // Загрузка фильмов
   loadMovieList();
   // Проверка, есть ли добавленные фильмы на странице, если нет, то выводится сообщение о том, что фильмов нет
   checkMovies(movieList);
-  // изменение текста в кнопке и в заголовке модального окна в обратное состояние
+  // изменение текста в кнопке и в заголовке модального окна в обратное состояние и при добавлении присваивается id = addMovie
   document.querySelector(".btn-add-movie").addEventListener("click", () => {
     document.querySelector(".modal-title").textContent = "Добавить фильм";
     document.querySelector(".btn-movie").value = "Добавить фильм";
+    addMoviesForm.setAttribute("id", "addMovie");
   });
   //   Добавление в избранное/удаление из избранных
   document.addEventListener("change", (event) => {
@@ -184,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!event.target.classList.contains("btn-close")) return;
     event.target.parentElement.nextElementSibling.firstElementChild.reset();
   });
+  // Возвращение старого значения
 
-  // Сделать массив из фильмов (один объект LocalStorage для всех фильмов) - дома
-  // Проблема с закрытием модального окна после добавления/редактирования
+  // Сделать массив из фильмов (один объект LocalStorage для всех фильмов)
 });
