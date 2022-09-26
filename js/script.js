@@ -11,32 +11,21 @@ document.addEventListener("DOMContentLoaded", function () {
       movieName = addMoviesName.value,
       moviesDate = addMoviesDate.value,
       movies = {};
-    checkFormsMovie(
-      linkMoviePosters,
-      movieName,
-      moviesDate,
-      (InFavourite = false),
-      movies
-    );
+    if (!checkFormsMovie(linkMoviePosters, movieName, moviesDate)) return;
+    movies.moviePosters = linkMoviePosters;
+    movies.movieName = movieName;
+    movies.moviesDate = moviesDate;
+    movies.inFavourite = false;
+    loadMovieInJSON(movieName, movies);
+    loadMovieList();
     event.target.reset();
   });
   // Проверка заполнения формы при добавлении/редактировании
-  function checkFormsMovie(
-    linkMoviePosters,
-    movieName,
-    moviesDate,
-    inFavourite,
-    movies
-  ) {
+  function checkFormsMovie(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
       if (isNaN(movieName) && movieName.length > 2) {
         if (moviesDate && !isNaN(moviesDate)) {
-          movies.moviePosters = linkMoviePosters;
-          movies.movieName = movieName;
-          movies.moviesDate = moviesDate;
-          movies.inFavourite = inFavourite;
-          loadMovieInJSON(movieName, movies);
-          loadMovieList();
+          return true;
         } else alert("Введите корерктную дату!");
       } else alert("Введите корректное название!");
     } else alert("Ссылка невалидна!");
@@ -186,5 +175,6 @@ document.addEventListener("DOMContentLoaded", function () {
     event.target.parentElement.nextElementSibling.firstElementChild.reset();
   });
 
-  // Проблема с закрытием модального окна после добавления/редактирования (лень делать его)
+  // Сделать массив из фильмов (один объект LocalStorage для всех фильмов) - дома
+  // Проблема с закрытием модального окна после добавления/редактирования
 });
