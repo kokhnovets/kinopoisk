@@ -1,6 +1,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
+  var myModal = new bootstrap.Modal(document.getElementById("exampleModal"));
   var addMoviesForm = document.querySelector(".needs-validation"),
       addMoviesPosters = addMoviesForm.querySelector(".form-image"),
       addMoviesName = addMoviesForm.querySelector(".form-name"),
@@ -21,11 +22,12 @@ document.addEventListener("DOMContentLoaded", function () {
     loadMovieInJSON(movieName, movies);
     loadMovieList();
     event.target.reset();
+    myModal.hide();
   }); // Проверка заполнения формы при добавлении/редактировании
 
   function checkFormsMovie(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
-      if (isNaN(movieName) && movieName.length > 2) {
+      if (movieName.length > 2) {
         if (moviesDate) {
           return true;
         } else alert("Введите корерктную дату!");
@@ -95,12 +97,9 @@ document.addEventListener("DOMContentLoaded", function () {
         localStorage.removeItem(movieNameCheck);
       }
     });
-    checkFormsMovie(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value, movie.inFavourite, movie); // addMoviesForm.addEventListener("submit", (event) => {
-    //   event.preventDefault();
-    // });
-    // Проверка на изменение названия фильма
-
+    checkFormsMovie(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value, movie.inFavourite, movie);
     loadMovieList(addMoviesName.value);
+    myModal.hide();
   }); // Загрузка фильмов
 
   loadMovieList(); // Проверка, есть ли добавленные фильмы на странице, если нет, то выводится сообщение о том, что фильмов нет
