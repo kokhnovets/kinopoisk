@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
       addMoviesPosters = addMoviesForm.querySelector(".form-image"),
       addMoviesName = addMoviesForm.querySelector(".form-name"),
       addMoviesDate = addMoviesForm.querySelector(".form-date"),
-      movieList = document.querySelector(".column-movies"); // Добавление нового фильма
+      movieList = document.querySelector(".column-movies"); // Добавление Aнового фильма
 
   addMoviesForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function checkFormsMovie(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
       if (isNaN(movieName) && movieName.length > 2) {
-        if (moviesDate && !isNaN(moviesDate)) {
+        if (moviesDate) {
           return true;
         } else alert("Введите корерктную дату!");
       } else alert("Введите корректное название!");
