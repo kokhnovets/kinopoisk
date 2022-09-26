@@ -167,11 +167,11 @@ document.addEventListener("DOMContentLoaded", function () {
         div.classList.add("mb-3");
         document.querySelector(".column-movies-favourites").append(div);
         div.innerHTML = `<div class="row g-0 movies">
-                                <div class="col-md-2">
+                                <div class="col-2">
                                     <img src="${movie.moviePosters}"
                                     class="img-fluid rounded-start" alt="..." />
                                 </div>
-                                <div class="col-md-8 d-flex justify-content-between align-items-start">
+                                <div class="col-8 d-flex justify-content-between align-items-start">
                                     <div class="card-body">
                                         <h2 class="card-title fw-bold movie-name">${
                                           movie.movieName
@@ -180,13 +180,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                             Дата выхода: ${movie.moviesDate}
                                         </p>
                                     </div>
-                                    <div class="btn-group mt-4" role="group" aria-label="Basic checkbox toggle button group">
+                                    <div class="btn-group d-flex align-items-center" role="group" aria-label="Basic checkbox toggle button group">
                                         <input type="checkbox" class="btn-check movie-favourite" id="btncheck${i}"  autocomplete="off" ${
           movie.inFavourite ? "checked" : ""
         } />
                                         <label class="btn btn-outline-primary" for="btncheck${i}">Избранное</label>
                                     </div>
-                                    <div class="dropdown mt-4 ml-2">
+                                    <div class="dropdown d-flex align-items-center">
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                             Действие

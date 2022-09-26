@@ -62,16 +62,15 @@ document.addEventListener("DOMContentLoaded", function () {
         continue;
       }
       let div = document.createElement("div");
-      div.classList.add("card");
-      div.classList.add("mb-3");
+      div.classList.add("card", "mb-3");
       document.querySelector(".column-movies").append(div);
       let movie = JSON.parse(localStorage[key]);
       div.innerHTML = `<div class="row g-0 movies">
                                 <div class="col-md-2">
                                     <img src="${movie.moviePosters}"
-                                    class="img-fluid rounded-start" alt="..." />
+                                    class="img-fluid rounded-start w-100" alt="..." />
                                 </div>
-                                <div class="col-md-8 d-flex justify-content-between align-items-start">
+                                <div class="col-md-8 d-flex justify-content-between flex-fill">
                                     <div class="card-body">
                                         <h2 class="card-title fw-bold movie-name">${
                                           movie.movieName
@@ -80,13 +79,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                             Дата выхода: ${movie.moviesDate}
                                         </p>
                                     </div>
-                                    <div class="btn-group mt-4" role="group" aria-label="Basic checkbox toggle button group">
+                                    <div class="btn-group me-3 d-flex align-items-center" role="group" aria-label="Basic checkbox toggle button group">
                                         <input type="checkbox" class="btn-check movie-favourite" id="btncheck${i}"  autocomplete="off" ${
         movie.inFavourite ? "checked" : ""
       } />
                                         <label class="btn btn-outline-primary" for="btncheck${i}">Избранное</label>
                                     </div>
-                                    <div class="dropdown mt-4 ml-2">
+                                    <div class="dropdown d-flex align-items-center me-3">
                                         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                             Действие
