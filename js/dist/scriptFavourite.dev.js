@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", function () {
       messages.textContent = "На данный момент в избранных нет фильмов и сериалов:(";
       elem.append(messages);
     }
-  }
+  } // Добавление нового фильма
+
 
   addMoviesForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -26,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
         moviesDate = addMoviesDate.value,
         movies = {};
     checkFormsMovie(linkMoviePosters, movieName, moviesDate, InFavourite = true, movies);
+    event.target.reset();
   }); // Проверка заполнения формы при добавлении/редактировании
 
   function checkFormsMovie(linkMoviePosters, movieName, moviesDate, inFavourite, movies) {
@@ -68,17 +70,18 @@ document.addEventListener("DOMContentLoaded", function () {
     var movieNameCheck = movie.movieName;
     addMoviesPosters.value = movie.moviePosters;
     addMoviesName.value = movie.movieName;
-    addMoviesDate.value = movie.moviesDate; // Проверка на изменение названия фильма
-
+    addMoviesDate.value = movie.moviesDate;
     addMoviesName.addEventListener("change", function () {
       if (movieNameCheck != addMoviesName.value) {
-        var quest = confirm("\u0412\u044B \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u0445\u043E\u0442\u0438\u0442\u0435 \u043F\u043E\u043C\u0435\u043D\u044F\u0442\u044C \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435?");
-        if (quest) localStorage.removeItem(movieNameCheck);
+        localStorage.removeItem(movieNameCheck);
       }
     });
-    checkFormsMovie(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value, movie);
-    loadMovieListFavourite();
-    checkMoviesFavourites(movieListFavourite);
+    checkFormsMovie(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value, movie.inFavourite, movie); // addMoviesForm.addEventListener("submit", (event) => {
+    //   event.preventDefault();
+    // });
+    // Проверка на изменение названия фильма
+
+    loadMovieList(addMoviesName.value);
   }); // Проверка, есть ли добавленные избранные фильмы на странице, если нет, то выводится сообщение о том, что фильмов нет
 
   checkMoviesFavourites(movieListFavourite); // изменение текста в кнопке и в заголовке модального окна в обратное состояние

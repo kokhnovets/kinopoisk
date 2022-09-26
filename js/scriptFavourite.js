@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
       elem.append(messages);
     }
   }
-
+  // Добавление нового фильма
   addMoviesForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const linkMoviePosters = addMoviesPosters.value,
@@ -36,7 +36,9 @@ document.addEventListener("DOMContentLoaded", function () {
       (InFavourite = true),
       movies
     );
+    event.target.reset();
   });
+
   // Проверка заполнения формы при добавлении/редактировании
   function checkFormsMovie(
     linkMoviePosters,
@@ -92,21 +94,24 @@ document.addEventListener("DOMContentLoaded", function () {
     addMoviesPosters.value = movie.moviePosters;
     addMoviesName.value = movie.movieName;
     addMoviesDate.value = movie.moviesDate;
-    // Проверка на изменение названия фильма
+
     addMoviesName.addEventListener("change", function () {
       if (movieNameCheck != addMoviesName.value) {
-        let quest = confirm(`Вы действительно хотите поменять название?`);
-        if (quest) localStorage.removeItem(movieNameCheck);
+        localStorage.removeItem(movieNameCheck);
       }
     });
     checkFormsMovie(
       addMoviesPosters.value,
       addMoviesName.value,
       addMoviesDate.value,
+      movie.inFavourite,
       movie
     );
-    loadMovieListFavourite();
-    checkMoviesFavourites(movieListFavourite);
+    // addMoviesForm.addEventListener("submit", (event) => {
+    //   event.preventDefault();
+    // });
+    // Проверка на изменение названия фильма
+    loadMovieList(addMoviesName.value);
   });
   // Проверка, есть ли добавленные избранные фильмы на странице, если нет, то выводится сообщение о том, что фильмов нет
   checkMoviesFavourites(movieListFavourite);
