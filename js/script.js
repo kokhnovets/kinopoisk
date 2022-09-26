@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
       movieName = addMoviesName.value,
       moviesDate = addMoviesDate.value,
       movies = {};
-    if (!checkFormsMovie(linkMoviePosters, movieName, moviesDate)) return;
+    if (!checkFormsMovieAdd(linkMoviePosters, movieName, moviesDate)) return;
     movies.moviePosters = linkMoviePosters;
     movies.movieName = movieName;
     movies.moviesDate = moviesDate;
@@ -23,13 +23,15 @@ document.addEventListener("DOMContentLoaded", function () {
     myModal.hide();
   });
   // Проверка заполнения формы при добавлении/редактировании
-  function checkFormsMovie(linkMoviePosters, movieName, moviesDate) {
+  function checkFormsMovieAdd(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
-      if (movieName.length > 2) {
-        if (moviesDate) {
-          return true;
-        } else alert("Введите корерктную дату!");
-      } else alert("Введите корректное название!");
+      if (!localStorage.getItem(movieName)) {
+        if (movieName.length > 2) {
+          if (moviesDate) {
+            return true;
+          } else alert("Введите корерктную дату!");
+        } else alert("Введите корректное название!");
+      } else alert("Такой фильм уже существует! Выберите другое название.");
     } else alert("Ссылка невалидна!");
   }
   // Проверка, есть ли фильмы на странице
@@ -49,7 +51,17 @@ document.addEventListener("DOMContentLoaded", function () {
       elem.append(messages);
     }
   }
-
+  // function checkFormsMovieChange(linkMoviePosters, movieName, moviesDate) {
+  //   if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
+  //     if (!localStorage.getItem(movieName)) {
+  //       if (movieName.length > 2) {
+  //         if (moviesDate) {
+  //           return true;
+  //         } else alert("Введите корерктную дату!");
+  //       } else alert("Введите корректное название!");
+  //     } else alert("Такой фильм уже существует! Выберите другое название.");
+  //   } else alert("Ссылка невалидна!");
+  // }
   // Перевод объекта в формат JSON
   function loadMovieInJSON(key, movies) {
     localStorage.setItem(key, JSON.stringify(movies));
