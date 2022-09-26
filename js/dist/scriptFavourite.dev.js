@@ -99,9 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
     movie.inFavourite = event.target.checked;
     loadMovieInJSON(movie.movieName, movie);
     checkMoviesFavourites(movieListFavourite);
-  }); // Проблема с закрытием модального окна после добавления/редактирования
-  // Проблема с корректным редактированием фильма (при false добавляет фильм)
-  // изменение текста в кнопке и в заголовке модального окна в обратное состояние
+  }); // изменение текста в кнопке и в заголовке модального окна в обратное состояние
 
   document.querySelector(".btn-add-movie").addEventListener("click", function () {
     document.querySelector(".modal-title").textContent = "Добавить фильм";
@@ -140,6 +138,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   loadMovieListFavourite();
-  checkMoviesFavourites(movieListFavourite); // Проблема с закрытием модального окна после добавления/редактирования
-  // Проблема с корректным редактированием фильма (при false добавляет фильм)
+  checkMoviesFavourites(movieListFavourite); // Сделать массив из фильмов (один объект LocalStorage для всех фильмов) - дома
+  // Проблема с закрытием модального окна после добавления/редактирования
 });
