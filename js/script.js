@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
       (InFavourite = false),
       movies
     );
+    event.target.reset();
   });
   // Проверка заполнения формы при добавлении/редактировании
   function checkFormsMovie(
@@ -36,7 +37,6 @@ document.addEventListener("DOMContentLoaded", function () {
           movies.inFavourite = inFavourite;
           loadMovieInJSON(movieName, movies);
           loadMovieList();
-          event.target.reset();
         } else alert("Введите корерктную дату!");
       } else alert("Введите корректное название!");
     } else alert("Ссылка невалидна!");
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
     addMoviesPosters.value = movie.moviePosters;
     addMoviesName.value = movie.movieName;
     addMoviesDate.value = movie.moviesDate;
-    // Проверка на изменение названия фильма
+
     addMoviesName.addEventListener("change", function () {
       if (movieNameCheck != addMoviesName.value) {
         localStorage.removeItem(movieNameCheck);
@@ -148,9 +148,14 @@ document.addEventListener("DOMContentLoaded", function () {
       addMoviesPosters.value,
       addMoviesName.value,
       addMoviesDate.value,
+      movie.inFavourite,
       movie
     );
-    loadMovieList();
+    // addMoviesForm.addEventListener("submit", (event) => {
+    //   event.preventDefault();
+    // });
+    // Проверка на изменение названия фильма
+    loadMovieList(addMoviesName.value);
   });
   // Загрузка фильмов
   loadMovieList();
@@ -161,7 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".modal-title").textContent = "Добавить фильм";
     document.querySelector(".btn-movie").value = "Добавить фильм";
   });
-
   //   Добавление в избранное/удаление из избранных
   document.addEventListener("change", (event) => {
     if (!event.target.classList.contains("movie-favourite")) return;
@@ -172,5 +176,15 @@ document.addEventListener("DOMContentLoaded", function () {
     movie.inFavourite = event.target.checked;
     loadMovieInJSON(movie.movieName, movie);
   });
-  // Проблема с закрытием модального окна после добавления/редактирования
+  // Очистка формы после отмены редактирования фильма (делегирование событий)
+  document.addEventListener("click", (event) => {
+    if (!event.target.classList.contains("btn-movie-close")) return;
+    event.target.closest(".add-movie").reset();
+  });
+  document.addEventListener("click", (event) => {
+    if (!event.target.classList.contains("btn-close")) return;
+    event.target.parentElement.nextElementSibling.firstElementChild.reset();
+  });
+
+  // Проблема с закрытием модального окна после добавления/редактирования (лень делать его)
 });
