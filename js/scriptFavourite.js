@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Добавление нового фильма
   addMoviesForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    console.log("");
+
     const linkMoviePosters = addMoviesPosters.value,
       movieName = addMoviesName.value,
       moviesDate = addMoviesDate.value,

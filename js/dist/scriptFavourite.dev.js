@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   addMoviesForm.addEventListener("submit", function (event) {
     event.preventDefault();
+    console.log("");
     var linkMoviePosters = addMoviesPosters.value,
         movieName = addMoviesName.value,
         moviesDate = addMoviesDate.value,
