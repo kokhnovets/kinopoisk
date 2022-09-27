@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     myModal.hide();
     event.target.reset();
   });
-  // Проверка заполнения формы при добавлении/редактировании
+  // Проверка заполнения формы при добавлении
   function checkFormsMovieAdd(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
       if (movieName && !localStorage.getItem(movieName)) {
@@ -200,7 +200,5 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!event.target.classList.contains("btn-close")) return;
     event.target.parentElement.nextElementSibling.firstElementChild.reset();
   });
-  // Возвращение старого значения
-
   // Сделать массив из фильмов (один объект LocalStorage для всех фильмов)
 });

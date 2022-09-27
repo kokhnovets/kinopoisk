@@ -1,6 +1,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", function () {
+  var myModal = new bootstrap.Modal(document.getElementById("exampleModal"));
   var addMoviesForm = document.querySelector(".needs-validation"),
       addMoviesPosters = addMoviesForm.querySelector(".form-image"),
       addMoviesName = addMoviesForm.querySelector(".form-name"),
@@ -22,28 +23,46 @@ document.addEventListener("DOMContentLoaded", function () {
 
   addMoviesForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    console.log("");
-    var linkMoviePosters = addMoviesPosters.value,
-        movieName = addMoviesName.value,
-        moviesDate = addMoviesDate.value,
-        movies = {};
-    checkFormsMovie(linkMoviePosters, movieName, moviesDate, InFavourite = true, movies);
-    event.target.reset();
-  }); // Проверка заполнения формы при добавлении/редактировании
 
-  function checkFormsMovie(linkMoviePosters, movieName, moviesDate, inFavourite, movies) {
+    if (addMoviesForm.getAttribute("id") === "changeMovie") {
+      var movie = JSON.parse(localStorage[movieNameCheck]);
+
+      if (movie.movieName != addMoviesName.value) {
+        localStorage.removeItem(movie.movieName);
+        if (!checkFormsMovieChange(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value)) return;
+        movie.moviePosters = addMoviesPosters.value;
+        movie.movieName = addMoviesName.value;
+        movie.moviesDate = addMoviesDate.value;
+        loadMovieInJSON(addMoviesName.value, movie);
+      } else {
+        movie.moviePosters = addMoviesPosters.value;
+        movie.moviesDate = addMoviesDate.value;
+        loadMovieInJSON(addMoviesName.value, movie);
+      }
+    } else if (addMoviesForm.getAttribute("id") === "addMovie") {
+      var movies = {};
+      if (!checkFormsMovieAdd(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value)) return;
+      movies.moviePosters = addMoviesPosters.value;
+      movies.movieName = addMoviesName.value;
+      movies.moviesDate = addMoviesDate.value;
+      movies.inFavourite = true;
+      loadMovieInJSON(addMoviesName.value, movies);
+    }
+
+    loadMovieListFavourite();
+    myModal.hide();
+    event.target.reset();
+  }); // Проверка заполнения формы при добавлении
+
+  function checkFormsMovieAdd(linkMoviePosters, movieName, moviesDate) {
     if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
-      if (isNaN(movieName) && movieName.length > 2) {
-        if (moviesDate && !isNaN(moviesDate)) {
-          movies.moviePosters = linkMoviePosters;
-          movies.movieName = movieName;
-          movies.moviesDate = moviesDate;
-          movies.inFavourite = inFavourite;
-          loadMovieInJSON(movieName, movies);
-          loadMovieListFavourite();
-          event.target.reset();
-        } else alert("Введите корерктную дату!");
-      } else alert("Введите корректное название!");
+      if (movieName && !localStorage.getItem(movieName)) {
+        if (movieName.length > 2) {
+          if (moviesDate) {
+            return true;
+          } else alert("Введите корерктную дату!");
+        } else alert("Введите корректное название!");
+      } else alert("Такой фильм уже существует! Выберите другое название.");
     } else alert("Ссылка невалидна!");
   } // Перевод объекта в формат JSON
 
@@ -60,7 +79,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (quest) localStorage.removeItem(parent.querySelector(".movie-name").textContent);
     loadMovieListFavourite();
     checkMoviesFavourites(movieListFavourite);
-  }); // Изменение данных фильма через делегирование событий
+  }); // проверку на редактирование вынес в отдельную функцию, т.к. в функции добавления идет еще проверка существующих фильмов
+
+  function checkFormsMovieChange(linkMoviePosters, movieName, moviesDate) {
+    if (/^(ftp|http|https):\/\/[^ "]+$/.test(linkMoviePosters)) {
+      if (movieName.length > 2) {
+        if (moviesDate) {
+          return true;
+        } else alert("Введите корерктную дату!");
+      } else alert("Введите корректное название!");
+    } else alert("Ссылка невалидна!");
+  } // Изменение данных фильма через делегирование событий
+
 
   document.addEventListener("click", function (event) {
     if (!event.target.classList.contains("change-movie")) return;
@@ -68,28 +98,21 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".modal-title").textContent = "Редактировать фильм";
     document.querySelector(".btn-movie").value = "Редактировать фильм";
     var movie = JSON.parse(localStorage[parent.querySelector(".movie-name").textContent]);
-    var movieNameCheck = movie.movieName;
     addMoviesPosters.value = movie.moviePosters;
     addMoviesName.value = movie.movieName;
     addMoviesDate.value = movie.moviesDate;
-    addMoviesName.addEventListener("change", function () {
-      if (movieNameCheck != addMoviesName.value) {
-        localStorage.removeItem(movieNameCheck);
-      }
-    });
-    checkFormsMovie(addMoviesPosters.value, addMoviesName.value, addMoviesDate.value, movie.inFavourite, movie); // addMoviesForm.addEventListener("submit", (event) => {
-    //   event.preventDefault();
-    // });
-    // Проверка на изменение названия фильма
+    movieNameCheck = movie.movieName; // При нажатии кнопки редактирования присваивается id = changeMovie
 
-    loadMovieList(addMoviesName.value);
+    addMoviesForm.setAttribute("id", "changeMovie");
+    loadMovieListFavourite();
   }); // Проверка, есть ли добавленные избранные фильмы на странице, если нет, то выводится сообщение о том, что фильмов нет
 
-  checkMoviesFavourites(movieListFavourite); // изменение текста в кнопке и в заголовке модального окна в обратное состояние
+  checkMoviesFavourites(movieListFavourite); // изменение текста в кнопке и в заголовке модального окна в обратное состояние и при добавлении присваивается id = addMovie
 
   document.querySelector(".btn-add-movie").addEventListener("click", function () {
     document.querySelector(".modal-title").textContent = "Добавить фильм";
     document.querySelector(".btn-movie").value = "Добавить фильм";
+    addMoviesForm.setAttribute("id", "addMovie");
   }); //   Добавление в избранное/удаление из избранных
 
   document.addEventListener("change", function (event) {
@@ -132,12 +155,11 @@ document.addEventListener("DOMContentLoaded", function () {
         div.classList.add("card");
         div.classList.add("mb-3");
         document.querySelector(".column-movies-favourites").append(div);
-        div.innerHTML = "<div class=\"row g-0 movies\">\n                                <div class=\"col-2\">\n                                    <img src=\"".concat(movie.moviePosters, "\"\n                                    class=\"img-fluid rounded-start\" alt=\"...\" />\n                                </div>\n                                <div class=\"col-8 d-flex justify-content-between align-items-start\">\n                                    <div class=\"card-body\">\n                                        <h2 class=\"card-title fw-bold movie-name\">").concat(movie.movieName, "</h2>\n                                        <p class=\"card-text\">\n                                            \u0414\u0430\u0442\u0430 \u0432\u044B\u0445\u043E\u0434\u0430: ").concat(movie.moviesDate, "\n                                        </p>\n                                    </div>\n                                    <div class=\"btn-group d-flex align-items-center\" role=\"group\" aria-label=\"Basic checkbox toggle button group\">\n                                        <input type=\"checkbox\" class=\"btn-check movie-favourite\" id=\"btncheck").concat(i, "\"  autocomplete=\"off\" ").concat(movie.inFavourite ? "checked" : "", " />\n                                        <label class=\"btn btn-outline-primary\" for=\"btncheck").concat(i, "\">\u0418\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0435</label>\n                                    </div>\n                                    <div class=\"dropdown d-flex align-items-center\">\n                                        <button class=\"btn btn-secondary dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton1\"\n                                            data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n                                            \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435\n                                        </button>\n                                        <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton1\">\n                                            <li><a class=\"delete-movie dropdown-item\" href=\"#\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</a></li>\n                                            <li><a class=\"change-movie dropdown-item redac-movie\" data-bs-toggle=\"modal\" data-bs-target=\"#exampleModal\" href=\"#\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</a></li>\n                                        </ul>\n                                    </div>\n                                </div>\n                            </div>");
+        div.innerHTML = "<div class=\"row g-0 movies\">\n                                <div class=\"col-md-2\">\n                                    <img src=\"".concat(movie.moviePosters, "\"\n                                    class=\"img-fluid rounded-start w-100\" alt=\"...\" />\n                                </div>\n                                <div class=\"col-md-8 d-flex justify-content-between flex-fill\">\n                                    <div class=\"card-body\">\n                                        <h2 class=\"card-title fw-bold movie-name\">").concat(movie.movieName, "</h2>\n                                        <p class=\"card-text\">\n                                            \u0414\u0430\u0442\u0430 \u0432\u044B\u0445\u043E\u0434\u0430: ").concat(movie.moviesDate, "\n                                        </p>\n                                    </div>\n                                    <div class=\"btn-group me-3 d-flex align-items-center\" role=\"group\" aria-label=\"Basic checkbox toggle button group\">\n                                        <input type=\"checkbox\" class=\"btn-check movie-favourite\" id=\"btncheck").concat(i, "\"  autocomplete=\"off\" ").concat(movie.inFavourite ? "checked" : "", " />\n                                        <label class=\"btn btn-outline-primary\" for=\"btncheck").concat(i, "\">\u0418\u0437\u0431\u0440\u0430\u043D\u043D\u043E\u0435</label>\n                                    </div>\n                                    <div class=\"dropdown d-flex align-items-center me-3\">\n                                        <button class=\"btn btn-secondary dropdown-toggle\" type=\"button\" id=\"dropdownMenuButton1\"\n                                            data-bs-toggle=\"dropdown\" aria-expanded=\"false\">\n                                            \u0414\u0435\u0439\u0441\u0442\u0432\u0438\u0435\n                                        </button>\n                                        <ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenuButton1\">\n                                            <li><a class=\"delete-movie dropdown-item\" href=\"#\">\u0423\u0434\u0430\u043B\u0438\u0442\u044C</a></li>\n                                            <li><a class=\"change-movie dropdown-item redac-movie\" data-bs-toggle=\"modal\" data-bs-target=\"#exampleModal\" href=\"#\">\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C</a></li>\n                                        </ul>\n                                    </div>\n                                </div>\n                            </div>");
       }
     }
   }
 
   loadMovieListFavourite();
-  checkMoviesFavourites(movieListFavourite); // Сделать массив из фильмов (один объект LocalStorage для всех фильмов) - дома
-  // Проблема с закрытием модального окна после добавления/редактирования
+  checkMoviesFavourites(movieListFavourite);
 });
